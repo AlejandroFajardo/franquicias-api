@@ -2,6 +2,7 @@ package com.challenge.accenture.franquicias_api.interfaces.controller;
 
 import com.challenge.accenture.franquicias_api.domain.model.Producto;
 import com.challenge.accenture.franquicias_api.domain.model.Sucursal;
+import com.challenge.accenture.franquicias_api.interfaces.dto.ProductoTopDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -105,7 +106,7 @@ public class FranquiciaController {
     }
 
     @GetMapping("/{franquiciaId}/top-productos")
-    public Flux<Producto> obtenerTopProductos(@PathVariable String franquiciaId) {
+    public Flux<ProductoTopDTO> obtenerTopProductos(@PathVariable String franquiciaId) {
 
         return repository.findById(franquiciaId)
                 .flatMapMany(f ->
@@ -115,6 +116,13 @@ public class FranquiciaController {
                         Flux.fromIterable(sucursal.getProductos() == null ? List.of() : sucursal.getProductos())
                                 .sort((p1, p2) -> p2.getStock().compareTo(p1.getStock()))
                                 .take(1)
+                                .map(p -> new ProductoTopDTO(
+                                        p.getId(),
+                                        p.getNombre(),
+                                        p.getStock(),
+                                        sucursal.getId(),
+                                        sucursal.getNombre()
+                                ))
                 );
     }
 

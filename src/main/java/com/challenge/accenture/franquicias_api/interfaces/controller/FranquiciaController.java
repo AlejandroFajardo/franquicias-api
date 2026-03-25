@@ -9,6 +9,9 @@ import reactor.core.publisher.Mono;
 import com.challenge.accenture.franquicias_api.domain.model.Franquicia;
 import com.challenge.accenture.franquicias_api.infrastructure.repository.FranquiciaRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/franquicias")
 @RequiredArgsConstructor
@@ -36,25 +39,26 @@ public class FranquiciaController {
                 });
     }
 
-    @PostMapping("/sucursales/{sucursalId}/productos")
+    @PostMapping("/{franquiciaId}/sucursales/{sucursalId}/productos")
     public Mono<Franquicia> agregarProducto(
+            @PathVariable String franquiciaId,
             @PathVariable String sucursalId,
             @RequestBody Producto producto) {
 
-        return repository.findAll()
+        return repository.findById(franquiciaId)
                 .flatMap(f -> {
                     if (f.getSucursales() != null) {
                         f.getSucursales().forEach(s -> {
                             if (s.getId().equals(sucursalId)) {
                                 if (s.getProductos() == null) {
-                                    s.setProductos(new java.util.ArrayList<>());
+                                    s.setProductos(new ArrayList<>());
                                 }
                                 s.getProductos().add(producto);
                             }
                         });
                     }
                     return repository.save(f);
-                }).next();
+                });
     }
 
     @DeleteMapping("/productos/{productoId}")
@@ -104,11 +108,13 @@ public class FranquiciaController {
     public Flux<Producto> obtenerTopProductos(@PathVariable String franquiciaId) {
 
         return repository.findById(franquiciaId)
-                .flatMapMany(f -> reactor.core.publisher.Flux.fromIterable(f.getSucursales()))
+                .flatMapMany(f ->
+                        Flux.fromIterable(f.getSucursales() == null ? List.of() : f.getSucursales())
+                )
                 .flatMap(sucursal ->
-                        reactor.core.publisher.Flux.fromIterable(sucursal.getProductos())
+                        Flux.fromIterable(sucursal.getProductos() == null ? List.of() : sucursal.getProductos())
                                 .sort((p1, p2) -> p2.getStock().compareTo(p1.getStock()))
-                                .next()
+                                .take(1) // 🔥 solución limpia
                 );
     }
 }

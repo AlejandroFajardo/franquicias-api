@@ -81,7 +81,19 @@ GET /franquicias/{id}/top-productos
 ### 🔧 Requisitos
 - Java 17
 - Maven
-- MongoDB corriendo en local
+- MongoDB (opcional si se usa Docker)
+- Docker (recomendado)
+
+### Uso con WSL (Windows)
+
+Si utilizas WSL, se recomienda instalar Docker Desktop en Windows y habilitar la integración con WSL:
+
+1. Instalar Docker Desktop
+2. Ir a Settings → Resources → WSL Integration
+3. Activar la distribución (Ubuntu, etc.)
+
+Luego podrás usar Docker desde WSL normalmente.
+
 
 ### 🚀 Ejecutar aplicación
 

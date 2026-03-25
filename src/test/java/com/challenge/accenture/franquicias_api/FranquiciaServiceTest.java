@@ -127,10 +127,11 @@ class FranquiciaServiceTest {
                                 .flatMap(s ->
                                         Flux.fromIterable(s.getProductos())
                                                 .sort((a, b) -> b.getStock() - a.getStock())
-                                                .next()
+                                                .take(1)
                                 )
                 )
-                .expectNextCount(2) // 2 sucursales
+                .expectNextMatches(p -> p.getNombre().equals("Gaseosa")) // s1
+                .expectNextMatches(p -> p.getNombre().equals("Cafe"))    // s2
                 .verifyComplete();
     }
 }

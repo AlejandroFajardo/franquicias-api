@@ -114,7 +114,64 @@ public class FranquiciaController {
                 .flatMap(sucursal ->
                         Flux.fromIterable(sucursal.getProductos() == null ? List.of() : sucursal.getProductos())
                                 .sort((p1, p2) -> p2.getStock().compareTo(p1.getStock()))
-                                .take(1) // 🔥 solución limpia
+                                .take(1)
                 );
+    }
+
+    @PutMapping("/{franquiciaId}/nombre")
+    public Mono<Franquicia> actualizarNombreFranquicia(
+            @PathVariable String franquiciaId,
+            @RequestBody String nuevoNombre) {
+
+        return repository.findById(franquiciaId)
+                .flatMap(f -> {
+                    f.setNombre(nuevoNombre);
+                    return repository.save(f);
+                });
+    }
+
+    @PutMapping("/{franquiciaId}/sucursales/{sucursalId}/nombre")
+    public Mono<Franquicia> actualizarNombreSucursal(
+            @PathVariable String franquiciaId,
+            @PathVariable String sucursalId,
+            @RequestBody String nuevoNombre) {
+
+        return repository.findById(franquiciaId)
+                .flatMap(f -> {
+                    if (f.getSucursales() != null) {
+                        f.getSucursales().forEach(s -> {
+                            if (s.getId().equals(sucursalId)) {
+                                s.setNombre(nuevoNombre);
+                            }
+                        });
+                    }
+                    return repository.save(f);
+                });
+    }
+
+    @PutMapping("/productos/{productoId}/nombre")
+    public Mono<Producto> actualizarNombreProducto(
+            @PathVariable String productoId,
+            @RequestBody String nuevoNombre) {
+
+        return repository.findAll()
+                .flatMap(f -> {
+                    if (f.getSucursales() != null) {
+                        f.getSucursales().forEach(s -> {
+                            if (s.getProductos() != null) {
+                                s.getProductos().forEach(p -> {
+                                    if (p.getId().equals(productoId)) {
+                                        p.setNombre(nuevoNombre);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    return repository.save(f);
+                })
+                .flatMap(f -> Flux.fromIterable(f.getSucursales()))
+                .flatMap(s -> Flux.fromIterable(s.getProductos()))
+                .filter(p -> p.getId().equals(productoId))
+                .next();
     }
 }

@@ -55,4 +55,21 @@ public class FranquiciaController {
                     return repository.save(f);
                 }).next();
     }
+
+    @DeleteMapping("/productos/{productoId}")
+    public Mono<Void> eliminarProducto(@PathVariable String productoId) {
+
+        return repository.findAll()
+                .flatMap(f -> {
+                    if (f.getSucursales() != null) {
+                        f.getSucursales().forEach(s -> {
+                            if (s.getProductos() != null) {
+                                s.getProductos().removeIf(p -> p.getId().equals(productoId));
+                            }
+                        });
+                    }
+                    return repository.save(f);
+                })
+                .then();
+    }
 }

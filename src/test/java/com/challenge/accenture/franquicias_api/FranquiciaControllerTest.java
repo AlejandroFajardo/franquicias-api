@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
+@ActiveProfiles("test")
 class FranquiciaControllerTest {
 
     @Autowired
@@ -90,5 +92,145 @@ class FranquiciaControllerTest {
                 .jsonPath("$[0].nombre").isEqualTo("Papas")
                 .jsonPath("$[1].nombre").isEqualTo("Cafe");
     }
-    
+
+    @Test
+    void actualizarNombreFranquiciaTest() {
+        repository.deleteAll().block();
+
+        Producto p1 = Producto.builder().id("p1").nombre("Hamburguesa").stock(50).build();
+        Producto p2 = Producto.builder().id("p2").nombre("Papas").stock(99).build();
+        Producto p3 = Producto.builder().id("p3").nombre("Gaseosa").stock(70).build();
+
+        Producto p4 = Producto.builder().id("p4").nombre("Helado").stock(15).build();
+        Producto p5 = Producto.builder().id("p5").nombre("Cafe").stock(40).build();
+
+        Sucursal s1 = Sucursal.builder()
+                .id("s1")
+                .nombre("Centro")
+                .productos(new ArrayList<>(List.of(p1, p2, p3)))
+                .build();
+
+        Sucursal s2 = Sucursal.builder()
+                .id("s2")
+                .nombre("Norte")
+                .productos(new ArrayList<>(List.of(p4, p5)))
+                .build();
+
+        Franquicia franquicia = Franquicia.builder()
+                .nombre("Test")
+                .sucursales(new ArrayList<>(List.of(s1, s2)))
+                .build();
+
+        franquicia = repository.save(franquicia).block();
+        repository.findAll().collectList().block();
+        webTestClient.put()
+                .uri("/franquicias/" + franquicia.getId() + "/nombre")
+                .bodyValue("NuevoNombre")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.nombre").isEqualTo("NuevoNombre");
+    }
+
+    @Test
+    void actualizarNombreSucursalTest() {
+        repository.deleteAll().block();
+
+        Producto p1 = Producto.builder().id("p1").nombre("Hamburguesa").stock(50).build();
+        Producto p2 = Producto.builder().id("p2").nombre("Papas").stock(99).build();
+        Producto p3 = Producto.builder().id("p3").nombre("Gaseosa").stock(70).build();
+
+        Producto p4 = Producto.builder().id("p4").nombre("Helado").stock(15).build();
+        Producto p5 = Producto.builder().id("p5").nombre("Cafe").stock(40).build();
+
+        Sucursal s1 = Sucursal.builder()
+                .id("s1")
+                .nombre("Centro")
+                .productos(new ArrayList<>(List.of(p1, p2, p3)))
+                .build();
+
+        Sucursal s2 = Sucursal.builder()
+                .id("s2")
+                .nombre("Norte")
+                .productos(new ArrayList<>(List.of(p4, p5)))
+                .build();
+
+        Franquicia franquicia = Franquicia.builder()
+                .nombre("Test")
+                .sucursales(new ArrayList<>(List.of(s1, s2)))
+                .build();
+
+        franquicia = repository.save(franquicia).block();
+        repository.findAll().collectList().block();
+        Sucursal sucursal = Sucursal.builder()
+                .id("s1")
+                .nombre("Viejo")
+                .productos(new ArrayList<>())
+                .build();
+
+        franquicia.setSucursales(new ArrayList<>(List.of(sucursal)));
+        repository.save(franquicia).block();
+
+        webTestClient.put()
+                .uri("/franquicias/" + franquicia.getId() + "/sucursales/s1/nombre")
+                .bodyValue("NuevoSucursal")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.sucursales[0].nombre").isEqualTo("NuevoSucursal");
+    }
+
+    @Test
+    void actualizarNombreProductoTest() {
+        repository.deleteAll().block();
+
+        Producto p1 = Producto.builder().id("p1").nombre("Hamburguesa").stock(50).build();
+        Producto p2 = Producto.builder().id("p2").nombre("Papas").stock(99).build();
+        Producto p3 = Producto.builder().id("p3").nombre("Gaseosa").stock(70).build();
+
+        Producto p4 = Producto.builder().id("p4").nombre("Helado").stock(15).build();
+        Producto p5 = Producto.builder().id("p5").nombre("Cafe").stock(40).build();
+
+        Sucursal s1 = Sucursal.builder()
+                .id("s1")
+                .nombre("Centro")
+                .productos(new ArrayList<>(List.of(p1, p2, p3)))
+                .build();
+
+        Sucursal s2 = Sucursal.builder()
+                .id("s2")
+                .nombre("Norte")
+                .productos(new ArrayList<>(List.of(p4, p5)))
+                .build();
+
+        Franquicia franquicia = Franquicia.builder()
+                .nombre("Test")
+                .sucursales(new ArrayList<>(List.of(s1, s2)))
+                .build();
+
+        franquicia = repository.save(franquicia).block();
+        repository.findAll().collectList().block();
+        Producto producto = Producto.builder()
+                .id("p1")
+                .nombre("ViejoProducto")
+                .stock(10)
+                .build();
+
+        Sucursal sucursal = Sucursal.builder()
+                .id("s1")
+                .nombre("Sucursal")
+                .productos(new ArrayList<>(List.of(producto)))
+                .build();
+
+        franquicia.setSucursales(new ArrayList<>(List.of(sucursal)));
+        repository.save(franquicia).block();
+
+        webTestClient.put()
+                .uri("/franquicias/productos/p1/nombre")
+                .bodyValue("NuevoProducto")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.nombre").isEqualTo("NuevoProducto");
+    }
 }

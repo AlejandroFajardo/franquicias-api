@@ -72,4 +72,30 @@ public class FranquiciaController {
                 })
                 .then();
     }
+
+    @PutMapping("/productos/{productoId}/stock")
+    public Mono<Producto> actualizarStock(
+            @PathVariable String productoId,
+            @RequestBody Integer nuevoStock) {
+
+        return repository.findAll()
+                .flatMap(f -> {
+                    if (f.getSucursales() != null) {
+                        f.getSucursales().forEach(s -> {
+                            if (s.getProductos() != null) {
+                                s.getProductos().forEach(p -> {
+                                    if (p.getId().equals(productoId)) {
+                                        p.setStock(nuevoStock);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    return repository.save(f);
+                })
+                .flatMap(f -> reactor.core.publisher.Flux.fromIterable(f.getSucursales()))
+                .flatMap(s -> reactor.core.publisher.Flux.fromIterable(s.getProductos()))
+                .filter(p -> p.getId().equals(productoId))
+                .next();
+    }
 }

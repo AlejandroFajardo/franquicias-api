@@ -45,6 +45,10 @@ interfaces/
 - ✔️ Eliminación de productos
 - ✔️ Actualización de stock
 - ✔️ Consulta del producto con mayor stock por sucursal
+- ✔️ Actualización de nombre de :
+  - Franquicia
+  - Sucursal
+  - Producto
 - ✔️ Programación reactiva con WebFlux (Mono / Flux)
 
 ---
@@ -55,8 +59,21 @@ Obtiene el producto con mayor stock por cada sucursal de una franquicia:
 
 ```
 GET /franquicias/{id}/top-productos
-```
 
+```
+📌 Respuesta ejemplo
+
+```
+[
+    {
+        "productoId": "p1",
+        "nombre": "Papas",
+        "stock": 99,
+        "sucursalId": "s1",
+        "sucursalNombre": "Centro"
+    }
+]
+```
 ---
 
 ## ▶️ Ejecución local
@@ -64,6 +81,7 @@ GET /franquicias/{id}/top-productos
 ### 🔧 Requisitos
 - Java 17
 - Maven
+- MongoDB corriendo en local
 
 ### 🚀 Ejecutar aplicación
 
@@ -87,22 +105,32 @@ http://localhost:8080
 ```
 docker-compose up --build
 ```
+Esto levantará:
 
+- API en puerto 8080
+- MongoDB en puerto 27017
 ---
 
 ## 🧪 Pruebas
 
-Ejecutar pruebas unitarias:
+Ejecutar pruebas:
 
 ```
 mvn test
 ```
+### 📌 Cobertura
 
-Incluye pruebas utilizando:
-- JUnit 5
-- Mockito
-- StepVerifier (reactivo)
+- Tests de integración con WebTestClient
+- Tests reactivos con StepVerifier
+- Mock de repositorio con Mockito
 
+se validan
+
+- Creación de franquicias
+- Eliminación de productos
+- Actualización de stock
+- Productos con mayor stock por sucursal
+- Actualización de nombres
 ---
 
 ## 📦 Base de datos
@@ -112,24 +140,56 @@ Se utiliza **MongoDB reactivo** para persistencia de datos.
 Configuración por defecto:
 
 ```
-mongodb://localhost:27017/test
+mongodb://localhost:27017/franquicias_db
 ```
 
 ---
 
 ## 📌 Endpoints principales
 
-| Método | Endpoint | Descripción |
-|--------|---------|------------|
-| POST | /franquicias | Crear franquicia |
-| POST | /franquicias/{id}/sucursales | Agregar sucursal |
-| POST | /sucursales/{id}/productos | Agregar producto |
-| DELETE | /productos/{id} | Eliminar producto |
-| PUT | /productos/{id}/stock | Actualizar stock |
-| GET | /franquicias/{id}/top-productos | Producto con mayor stock |
+| Método | Endpoint                                                      | Descripción                     |
+|--------|---------------------------------------------------------------|---------------------------------|
+| POST   | /franquicias                                                  | Crear franquicia                |
+| POST   | /franquicias/{id}/sucursales                                  | Agregar sucursal                |
+| POST   | /franquicias/{franquiciaId}/sucursales/{sucursalId}/productos | Agregar producto                |
+| DELETE | /franquicias/productos/{productoId}                           | 	Eliminar producto            |
+| PUT    | /franquicias/productos/{productoId}/stock                     | 	Actualizar stock             |
+| GET	   | /franquicias/{id}/top-productos                               | 	Top productos por sucursal   |
+| PUT	   | /franquicias/{id}/nombre                                      | 	Actualizar nombre franquicia |
+| PUT	   | /franquicias/{id}/sucursales/{sucursalId}/nombre              | 	Actualizar nombre sucursal   |
+| PUT	   | /franquicias/productos/{productoId}/nombre	                   | Actualizar nombre producto      |
 
 ---
+## 📥 Ejemplo de uso
+### Crear franquicia
+```
 
+POST /franquicias
+```
+Body:
+```
+{ 
+    "nombre": "Franquicia Demo" 
+}
+```
+---
+## 🔄 Flujo de negocio
+1. Crear franquicia
+2. Agregar sucursales
+3. Agregar productos
+4. Gestionar stock
+5. Consultar producto con mayor stock por sucursal
+---
+
+---
+## ⚠️ Manejo de errores
+
+Se utilizan códigos HTTP estándar:
+
+- 200 OK
+- 400 Bad Request
+- 404 Not Found
+---
 ## 📄 Buenas prácticas aplicadas
 
 - Clean Architecture
@@ -149,4 +209,6 @@ La aplicación puede ejecutarse en contenedores Docker para facilitar su desplie
 
 ## 👨‍💻 Autor
 
-Desarrollado como prueba técnica backend por Alejandro Fajardo.
+Alejandro Fajardo
+
+Backend Developer

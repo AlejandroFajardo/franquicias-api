@@ -52,27 +52,25 @@ class FranquiciaControllerTest {
     }
 
     @Test
-    void topProductosExactoTest() {
+    void topProductosConSucursalTest() {
 
         repository.deleteAll().block();
 
         Producto p1 = Producto.builder().id("p1").nombre("Hamburguesa").stock(50).build();
         Producto p2 = Producto.builder().id("p2").nombre("Papas").stock(99).build();
-        Producto p3 = Producto.builder().id("p3").nombre("Gaseosa").stock(70).build();
 
-        Producto p4 = Producto.builder().id("p4").nombre("Helado").stock(15).build();
-        Producto p5 = Producto.builder().id("p5").nombre("Cafe").stock(40).build();
+        Producto p3 = Producto.builder().id("p3").nombre("Cafe").stock(40).build();
 
         Sucursal s1 = Sucursal.builder()
                 .id("s1")
                 .nombre("Centro")
-                .productos(new ArrayList<>(List.of(p1, p2, p3)))
+                .productos(new ArrayList<>(List.of(p1, p2)))
                 .build();
 
         Sucursal s2 = Sucursal.builder()
                 .id("s2")
                 .nombre("Norte")
-                .productos(new ArrayList<>(List.of(p4, p5)))
+                .productos(new ArrayList<>(List.of(p3)))
                 .build();
 
         Franquicia franquicia = Franquicia.builder()
@@ -81,7 +79,6 @@ class FranquiciaControllerTest {
                 .build();
 
         franquicia = repository.save(franquicia).block();
-        repository.findAll().collectList().block();
 
         webTestClient.get()
                 .uri("/franquicias/" + franquicia.getId() + "/top-productos")
@@ -89,8 +86,9 @@ class FranquiciaControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(2)
+                .jsonPath("$[0].sucursalNombre").isEqualTo("Centro")
                 .jsonPath("$[0].nombre").isEqualTo("Papas")
-                .jsonPath("$[1].nombre").isEqualTo("Cafe");
+                .jsonPath("$[1].sucursalNombre").isEqualTo("Norte");
     }
 
     @Test

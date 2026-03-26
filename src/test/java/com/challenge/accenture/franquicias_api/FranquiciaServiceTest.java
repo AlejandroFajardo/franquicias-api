@@ -1,17 +1,23 @@
 package com.challenge.accenture.franquicias_api;
 
-import com.challenge.accenture.franquicias_api.domain.model.*;
-import com.challenge.accenture.franquicias_api.infrastructure.repository.FranquiciaRepository;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.challenge.accenture.franquicias_api.domain.model.Franquicia;
+import com.challenge.accenture.franquicias_api.domain.model.Producto;
+import com.challenge.accenture.franquicias_api.domain.model.Sucursal;
+import com.challenge.accenture.franquicias_api.infrastructure.repository.FranquiciaRepository;
+
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@ActiveProfiles("test")
 @SpringBootTest
 class FranquiciaServiceTest {
 

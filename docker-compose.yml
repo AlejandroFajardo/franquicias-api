@@ -1,0 +1,14 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+
+  app:
+    build: .
+    container_name: franquicias-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo

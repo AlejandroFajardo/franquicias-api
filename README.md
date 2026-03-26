@@ -4,6 +4,41 @@ API desarrollada como solución a prueba técnica para Backend Developer, implem
 
 ---
 
+## 📘 Documentación de la API (Swagger)
+
+La API cuenta con documentación interactiva generada con OpenAPI (Swagger), la cual permite explorar y probar todos los endpoints directamente desde el navegador.
+
+### 🔗 Acceso local
+
+Una vez levantada la aplicación:
+
+http://localhost:8080/swagger-ui.html
+
+### 🚀 ¿Qué incluye?
+
+- Descripción de todos los endpoints
+- Parámetros documentados
+- Ejemplos de request
+- Respuestas esperadas (status codes)
+- Modelos de datos explicados
+
+### 🧪 Uso
+
+1. Ingresar a la URL de Swagger
+2. Seleccionar el endpoint deseado
+3. Hacer clic en "Try it out"
+4. Ejecutar la petición
+
+---
+
+## 🐳 Ejecución con Docker
+
+```bash
+mvn clean package -DskipTests
+docker compose up --build
+
+---
+
 ## 🧠 Tecnologías utilizadas
 
 - Java 17
@@ -11,6 +46,7 @@ API desarrollada como solución a prueba técnica para Backend Developer, implem
 - MongoDB (Reactive)
 - Maven
 - Docker
+- OpenAPI (Swagger)
 
 ---
 

@@ -4,6 +4,41 @@ API desarrollada como solución a prueba técnica para Backend Developer, implem
 
 ---
 
+
+## 🧠 Tecnologías utilizadas
+
+- Java 17
+- Spring Boot (WebFlux)
+- MongoDB (Reactive)
+- Maven
+- Docker
+- OpenAPI (Swagger)
+- Render (Deploy)
+- Mongo Atlas (Cloud DB)
+
+---
+
+##🌐 🚀 API en Producción
+
+###La aplicación se encuentra desplegada en Render:
+
+🔗 Base URL
+
+https://franquicias-api-ihyn.onrender.com
+
+🔗 Swagger (Documentación interactiva)
+
+https://franquicias-api-ihyn.onrender.com/webjars/swagger-ui/index.html#/
+
+🔗 Health Check
+
+GET /
+
+Respuesta:
+
+OK
+---
+
 ## 📘 Documentación de la API (Swagger)
 
 La API cuenta con documentación interactiva generada con OpenAPI (Swagger), la cual permite explorar y probar todos los endpoints directamente desde el navegador.
@@ -36,18 +71,7 @@ http://localhost:8080/swagger-ui.html
 ```bash
 mvn clean package -DskipTests
 docker compose up --build
-
----
-
-## 🧠 Tecnologías utilizadas
-
-- Java 17
-- Spring Boot (WebFlux)
-- MongoDB (Reactive)
-- Maven
-- Docker
-- OpenAPI (Swagger)
-
+```
 ---
 
 ## 🏗️ Arquitectura
